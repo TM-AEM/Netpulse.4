@@ -58,8 +58,16 @@ fun MetricCard(
     val downloadFormatted = ByteFormatter.format(usage.downloadBytes, forcedUnit).getDisplay(language)
     val uploadFormatted = ByteFormatter.format(usage.uploadBytes, forcedUnit).getDisplay(language)
 
-    val dlLabel = if (language == AppLanguage.AR) "تنزيل" else "Download"
-    val ulLabel = if (language == AppLanguage.AR) "رفع" else "Upload"
+    val dlLabel = when (language) {
+        AppLanguage.AR -> "تنزيل"
+        AppLanguage.FR -> "Téléchargement"
+        AppLanguage.EN -> "Download"
+    }
+    val ulLabel = when (language) {
+        AppLanguage.AR -> "رفع"
+        AppLanguage.FR -> "Téléversement"
+        AppLanguage.EN -> "Upload"
+    }
 
     if (isHero) {
         HeroMetricCard(

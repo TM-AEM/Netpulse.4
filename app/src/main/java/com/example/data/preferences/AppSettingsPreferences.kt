@@ -8,26 +8,53 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-enum class AppThemeMode(val labelAr: String, val labelEn: String) {
-    SYSTEM("تلقائي (النظام)", "System Default"),
-    LIGHT("فاتح (Light)", "Light"),
-    DARK("داكن (Dark)", "Dark")
+enum class AppThemeMode(val labelAr: String, val labelEn: String, val labelFr: String = labelEn) {
+    SYSTEM("تلقائي (النظام)", "System Default", "Système par défaut"),
+    LIGHT("فاتح (Light)", "Light", "Clair"),
+    DARK("داكن (Dark)", "Dark", "Sombre");
+
+    fun getLabel(language: AppLanguage): String = when (language) {
+        AppLanguage.AR -> labelAr
+        AppLanguage.FR -> labelFr
+        AppLanguage.EN -> labelEn
+    }
 }
 
-enum class AppLanguage(val labelAr: String, val labelEn: String, val code: String) {
-    AR("العربية", "Arabic", "ar"),
-    EN("English", "English", "en")
+enum class AppLanguage(val labelAr: String, val labelEn: String, val code: String, val labelFr: String = labelEn) {
+    AR("العربية", "Arabic", "ar", "Arabe"),
+    EN("English", "English", "en", "Anglais"),
+    FR("الفرنسية (Français)", "French (Français)", "fr", "Français");
+
+    val isRtl: Boolean get() = this == AR
+
+    fun getLabel(currentLanguage: AppLanguage): String = when (currentLanguage) {
+        AR -> labelAr
+        FR -> labelFr
+        EN -> labelEn
+    }
 }
 
-enum class AppDataUnit(val labelAr: String, val labelEn: String) {
-    AUTO("تلقائي (Auto)", "Auto (B/KB/MB/GB)"),
-    MB("ميجابايت (MB)", "Megabytes (MB)"),
-    GB("جيجابايت (GB)", "Gigabytes (GB)")
+enum class AppDataUnit(val labelAr: String, val labelEn: String, val labelFr: String = labelEn) {
+    AUTO("تلقائي (Auto)", "Auto (B/KB/MB/GB)", "Automatique (o/Ko/Mo/Go)"),
+    MB("ميجابايت (MB)", "Megabytes (MB)", "Mégaoctets (Mo)"),
+    GB("جيجابايت (GB)", "Gigabytes (GB)", "Gigaoctets (Go)");
+
+    fun getLabel(language: AppLanguage): String = when (language) {
+        AppLanguage.AR -> labelAr
+        AppLanguage.FR -> labelFr
+        AppLanguage.EN -> labelEn
+    }
 }
 
-enum class AppRefreshMode(val labelAr: String, val labelEn: String) {
-    SMART("تلقائي ذكي (Smart)", "Smart Auto-Refresh"),
-    MANUAL("يدوي فقط (Manual Only)", "Manual Only")
+enum class AppRefreshMode(val labelAr: String, val labelEn: String, val labelFr: String = labelEn) {
+    SMART("تلقائي ذكي (Smart)", "Smart Auto-Refresh", "Actualisation intelligente"),
+    MANUAL("يدوي فقط (Manual Only)", "Manual Only", "Manuel uniquement");
+
+    fun getLabel(language: AppLanguage): String = when (language) {
+        AppLanguage.AR -> labelAr
+        AppLanguage.FR -> labelFr
+        AppLanguage.EN -> labelEn
+    }
 }
 
 class AppSettingsPreferences(context: Context) {

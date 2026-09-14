@@ -26,10 +26,13 @@ fun PrivacyPolicyDialog(
     onDismiss: () -> Unit,
     language: AppLanguage = AppLanguage.AR
 ) {
-    val isArabic = language == AppLanguage.AR
-    val title = if (isArabic) "سياسة الخصوصية والشفافية" else "Privacy Policy & Transparency"
-    val content = if (isArabic) {
-        """
+    val title = when (language) {
+        AppLanguage.AR -> "سياسة الخصوصية والشفافية"
+        AppLanguage.FR -> "Politique de confidentialité et transparence"
+        AppLanguage.EN -> "Privacy Policy & Transparency"
+    }
+    val content = when (language) {
+        AppLanguage.AR -> """
         تطبيق NetPulse مبني على مبدأ الخصوصية الكاملة:
         
         1. محلي 100%: جميع إحصائيات الاستهلاك يتم الاستعلام عنها محلياً ومباشرة من نظام أندرويد عبر NetworkStatsManager.
@@ -37,8 +40,15 @@ fun PrivacyPolicyDialog(
         3. إذن الوصول للاستخدام: مطلوب حصرياً لقراءة جداول استهلاك الشبكة الرسمية من أندرويد.
         4. إعداداتك محفوظة على جهازك فقط عبر التخزين المحلي الآمن.
         """.trimIndent()
-    } else {
-        """
+        AppLanguage.FR -> """
+        NetPulse est conçu selon un principe de confidentialité absolue :
+        
+        1. 100% Local : Toutes les statistiques réseau sont interrogées directement et localement depuis Android via NetworkStatsManager.
+        2. Aucun serveur, aucun suivi : Zéro télémétrie, analyse ou serveur tiers.
+        3. Autorisation d'accès : Requise uniquement pour lire les tables officielles de consommation réseau d'Android.
+        4. Préférences locales : Vos réglages restent exclusivement sur votre appareil grâce au stockage local sécurisé.
+        """.trimIndent()
+        AppLanguage.EN -> """
         NetPulse is built with absolute privacy:
         
         1. 100% Local: All data statistics are queried directly and locally from Android NetworkStatsManager.
@@ -83,7 +93,13 @@ fun PrivacyPolicyDialog(
                     onClick = onDismiss,
                     modifier = Modifier.fillMaxWidth().testTag("close_privacy_dialog_button")
                 ) {
-                    Text(if (isArabic) "حسناً، فهمت" else "Got It")
+                    Text(
+                        when (language) {
+                            AppLanguage.AR -> "حسناً، فهمت"
+                            AppLanguage.FR -> "J'ai compris"
+                            AppLanguage.EN -> "Got It"
+                        }
+                    )
                 }
             }
         }

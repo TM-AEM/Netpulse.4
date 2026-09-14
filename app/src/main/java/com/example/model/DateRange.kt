@@ -59,17 +59,9 @@ data class DateRange(
 
     fun formatDisplay(language: AppLanguage): String {
         return if (isSingleDay) {
-            if (language == AppLanguage.AR) {
-                DateTimeUtils.formatDateArabic(startDate)
-            } else {
-                DateTimeUtils.formatDateEnglish(startDate)
-            }
+            DateTimeUtils.formatDate(startDate, language)
         } else {
-            if (language == AppLanguage.AR) {
-                "${DateTimeUtils.formatDateArabic(startDate)} - ${DateTimeUtils.formatDateArabic(endDate)}"
-            } else {
-                "${DateTimeUtils.formatDateEnglish(startDate)} - ${DateTimeUtils.formatDateEnglish(endDate)}"
-            }
+            "${DateTimeUtils.formatDate(startDate, language)} - ${DateTimeUtils.formatDate(endDate, language)}"
         }
     }
 

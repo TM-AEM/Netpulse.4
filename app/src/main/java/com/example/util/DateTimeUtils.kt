@@ -1,10 +1,12 @@
 package com.example.util
 
+import com.example.data.preferences.AppLanguage
 import java.time.Clock
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.time.format.TextStyle
 import java.util.Locale
 
 object DateTimeUtils {
@@ -70,10 +72,18 @@ object DateTimeUtils {
 
     private val arabicDateFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.forLanguageTag("ar"))
     private val englishDateFormatter = DateTimeFormatter.ofPattern("MMM d, yyyy", Locale.ENGLISH)
+    private val frenchDateFormatter = DateTimeFormatter.ofPattern("d MMM yyyy", Locale.FRENCH)
     private val timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss", Locale.ENGLISH)
 
     fun formatDateArabic(date: LocalDate): String = date.format(arabicDateFormatter)
     fun formatDateEnglish(date: LocalDate): String = date.format(englishDateFormatter)
+    fun formatDateFrench(date: LocalDate): String = date.format(frenchDateFormatter)
+
+    fun formatDate(date: LocalDate, language: AppLanguage): String = when (language) {
+        AppLanguage.AR -> formatDateArabic(date)
+        AppLanguage.FR -> formatDateFrench(date)
+        AppLanguage.EN -> formatDateEnglish(date)
+    }
 
     fun formatEpochTime(epochMs: Long, zoneId: ZoneId = getLocalZoneId()): String {
         return Instant.ofEpochMilli(epochMs).atZone(zoneId).format(timeFormatter)
@@ -82,5 +92,11 @@ object DateTimeUtils {
     fun formatDayNameArabic(date: LocalDate): String {
         val arabicDayFormatter = DateTimeFormatter.ofPattern("EEEE", Locale.forLanguageTag("ar"))
         return date.format(arabicDayFormatter)
+    }
+
+    fun formatDayName(date: LocalDate, language: AppLanguage): String = when (language) {
+        AppLanguage.AR -> formatDayNameArabic(date)
+        AppLanguage.FR -> date.format(DateTimeFormatter.ofPattern("EEEE", Locale.FRENCH))
+        AppLanguage.EN -> date.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.ENGLISH)
     }
 }

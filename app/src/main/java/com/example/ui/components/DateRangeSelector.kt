@@ -48,7 +48,6 @@ fun DateRangeSelector(
     onNavigatePrevious: (() -> Unit)? = null,
     onNavigateNext: (() -> Unit)? = null
 ) {
-    val isArabic = language == AppLanguage.AR
     val screenWidth = LocalConfiguration.current.screenWidthDp
     val isNarrow = screenWidth < 480
 
@@ -95,7 +94,11 @@ fun DateRangeSelector(
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = if (isArabic) "الفترة السابقة" else "Previous Period",
+                        contentDescription = when (language) {
+                            AppLanguage.AR -> "الفترة السابقة"
+                            AppLanguage.FR -> "Période précédente"
+                            AppLanguage.EN -> "Previous Period"
+                        },
                         modifier = Modifier.size(18.dp),
                         tint = if (onNavigatePrevious != null) {
                             MaterialTheme.colorScheme.onSurfaceVariant
@@ -141,7 +144,11 @@ fun DateRangeSelector(
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                        contentDescription = if (isArabic) "الفترة التالية" else "Next Period",
+                        contentDescription = when (language) {
+                            AppLanguage.AR -> "الفترة التالية"
+                            AppLanguage.FR -> "Période suivante"
+                            AppLanguage.EN -> "Next Period"
+                        },
                         modifier = Modifier.size(18.dp),
                         tint = if (onNavigateNext != null && canNavigateNext) {
                             MaterialTheme.colorScheme.onSurfaceVariant
@@ -222,6 +229,14 @@ private fun getPresetLabel(preset: PeriodPreset, language: AppLanguage, isNarrow
             PeriodPreset.LAST_30_DAYS -> "30 يوم"
             PeriodPreset.THIS_MONTH -> "الشهر"
             PeriodPreset.CUSTOM -> "مخصص"
+        }
+        AppLanguage.FR -> when (preset) {
+            PeriodPreset.TODAY -> "Aujourd'hui"
+            PeriodPreset.YESTERDAY -> if (isNarrow) "Hier" else "Hier"
+            PeriodPreset.LAST_7_DAYS -> if (isNarrow) "7j" else "7 jours"
+            PeriodPreset.LAST_30_DAYS -> if (isNarrow) "30j" else "30 jours"
+            PeriodPreset.THIS_MONTH -> if (isNarrow) "Mois" else "Ce mois-ci"
+            PeriodPreset.CUSTOM -> "Personnalisé"
         }
         AppLanguage.EN -> when (preset) {
             PeriodPreset.TODAY -> "Today"

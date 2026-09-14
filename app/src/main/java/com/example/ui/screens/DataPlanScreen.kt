@@ -90,7 +90,6 @@ fun DataPlanScreen(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    val isArabic = language == AppLanguage.AR
 
     val localizedContext = remember(context, language) {
         val conf = Configuration(context.resources.configuration)
@@ -503,20 +502,10 @@ private fun ActiveUsageCard(
     language: AppLanguage,
     isLoading: Boolean
 ) {
-    val isArabic = language == AppLanguage.AR
     val isOverLimit = status.isOverLimit
-
     val cyclePeriod = status.cyclePeriod
-    val cycleFormatted = if (isArabic) {
-        "${DateTimeUtils.formatDateArabic(cyclePeriod.startDate)} – ${DateTimeUtils.formatDateArabic(cyclePeriod.endDate)}"
-    } else {
-        "${DateTimeUtils.formatDateEnglish(cyclePeriod.startDate)} – ${DateTimeUtils.formatDateEnglish(cyclePeriod.endDate)}"
-    }
-    val renewsFormatted = if (isArabic) {
-        "${DateTimeUtils.formatDateArabic(cyclePeriod.nextCycleStartDate)}"
-    } else {
-        "${DateTimeUtils.formatDateEnglish(cyclePeriod.nextCycleStartDate)}"
-    }
+    val cycleFormatted = "${DateTimeUtils.formatDate(cyclePeriod.startDate, language)} – ${DateTimeUtils.formatDate(cyclePeriod.endDate, language)}"
+    val renewsFormatted = DateTimeUtils.formatDate(cyclePeriod.nextCycleStartDate, language)
 
     val usedFormatted = ByteFormatter.format(status.usedBytes).getDisplay(language)
     val limitFormatted = ByteFormatter.format(status.limitBytes).getDisplay(language)

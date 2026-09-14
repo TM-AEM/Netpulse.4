@@ -1,5 +1,8 @@
 package com.example.ui.screens
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -15,8 +18,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.DataUsage
 import androidx.compose.material.icons.filled.Info
@@ -32,6 +33,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -49,6 +51,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.data.preferences.AppLanguage
 import com.example.model.NetworkType
 import com.example.model.NetworkUsage
 import com.example.ui.components.ConnectionStatusBanner
@@ -77,7 +80,6 @@ fun DashboardScreen(
     modifier: Modifier = Modifier
 ) {
     val language = uiState.language
-    val isArabic = language == com.example.data.preferences.AppLanguage.AR
 
     var showCustomRangeDialog by remember { mutableStateOf(false) }
     var showDiagnosticsSheet by remember { mutableStateOf(false) }
@@ -109,7 +111,7 @@ fun DashboardScreen(
             },
             language = language,
             onSelectNetworkType = { type ->
-                viewModel.loadDiagnostics(networkType = type)
+                viewModel.loadDiagnostics(range = uiState.dateRange, networkType = type)
             }
         )
     }
@@ -134,8 +136,13 @@ fun DashboardScreen(
                             fontWeight = FontWeight.Bold
                         )
                         if (uiState.lastRefreshFormatted.isNotEmpty()) {
+                            val updatedPrefix = when (language) {
+                                AppLanguage.AR -> "تم التحديث"
+                                AppLanguage.FR -> "Mis à jour"
+                                AppLanguage.EN -> "Updated"
+                            }
                             Text(
-                                text = "${if (isArabic) "تم التحديث" else "Updated"}: ${uiState.lastRefreshFormatted}",
+                                text = "$updatedPrefix: ${uiState.lastRefreshFormatted}",
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -150,7 +157,11 @@ fun DashboardScreen(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.BugReport,
-                                contentDescription = if (isArabic) "التشخيص" else "Diagnostics",
+                                contentDescription = when (language) {
+                                    AppLanguage.AR -> "التشخيص"
+                                    AppLanguage.FR -> "Diagnostics"
+                                    AppLanguage.EN -> "Diagnostics"
+                                },
                                 tint = MaterialTheme.colorScheme.primary
                             )
                         }
@@ -161,7 +172,11 @@ fun DashboardScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Default.DataUsage,
-                            contentDescription = if (isArabic) "استهلاك التطبيقات" else "App Usage"
+                            contentDescription = when (language) {
+                                AppLanguage.AR -> "استهلاك التطبيقات"
+                                AppLanguage.FR -> "Consommation des applications"
+                                AppLanguage.EN -> "App Usage"
+                            }
                         )
                     }
                     IconButton(
@@ -170,7 +185,11 @@ fun DashboardScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Refresh,
-                            contentDescription = if (isArabic) "تحديث" else "Refresh"
+                            contentDescription = when (language) {
+                                AppLanguage.AR -> "تحديث"
+                                AppLanguage.FR -> "Actualiser"
+                                AppLanguage.EN -> "Refresh"
+                            }
                         )
                     }
                     IconButton(
@@ -179,7 +198,11 @@ fun DashboardScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Settings,
-                            contentDescription = if (isArabic) "الإعدادات" else "Settings"
+                            contentDescription = when (language) {
+                                AppLanguage.AR -> "الإعدادات"
+                                AppLanguage.FR -> "Paramètres"
+                                AppLanguage.EN -> "Settings"
+                            }
                         )
                     }
                 }
@@ -191,8 +214,19 @@ fun DashboardScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
-                .padding(bottom = DesignTokens.SpacingXLarge)
         ) {
+            AnimatedVisibility(
+                visible = uiState.isLoading,
+                enter = fadeIn(),
+                exit = fadeOut()
+            ) {
+                LinearProgressIndicator(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag("dashboard_loading_indicator")
+                )
+            }
+
             Spacer(modifier = Modifier.height(DesignTokens.SpacingSmall))
 
             ConnectionStatusBanner(
@@ -209,29 +243,24 @@ fun DashboardScreen(
                 onCustomClick = { showCustomRangeDialog = true },
                 language = language,
                 onNavigatePrevious = { viewModel.navigatePreviousPeriod() },
-                onNavigateNext = { viewModel.navigateNextPeriod() }
+                onNavigateNext = { viewModel.navigateNextPeriod() },
+                modifier = Modifier.padding(horizontal = DesignTokens.SpacingMedium)
             )
 
-            Spacer(modifier = Modifier.height(DesignTokens.SpacingSmall))
+            Spacer(modifier = Modifier.height(DesignTokens.SpacingMedium))
 
-            if (uiState.isLoading && uiState.summary == null) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(modifier = Modifier.testTag("loading_indicator"))
-                }
-            } else if (uiState.errorMessage != null && uiState.summary == null) {
+            if (uiState.errorMessage != null && uiState.summary == null) {
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(DesignTokens.SpacingMedium),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
+                        .padding(horizontal = DesignTokens.SpacingMedium),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer),
+                    shape = RoundedCornerShape(DesignTokens.CardCornerRadius)
                 ) {
                     Column(
-                        modifier = Modifier.padding(DesignTokens.SpacingMedium),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(DesignTokens.SpacingLarge),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
@@ -241,7 +270,13 @@ fun DashboardScreen(
                         )
                         Spacer(modifier = Modifier.height(DesignTokens.SpacingSmall))
                         Button(onClick = { viewModel.refreshData(force = true) }) {
-                            Text(if (isArabic) "إعادة المحاولة" else "Retry")
+                            Text(
+                                when (language) {
+                                    AppLanguage.AR -> "إعادة المحاولة"
+                                    AppLanguage.FR -> "Réessayer"
+                                    AppLanguage.EN -> "Retry"
+                                }
+                            )
                         }
                     }
                 }
@@ -264,13 +299,21 @@ fun DashboardScreen(
 
                     // Overall Total as primary HERO metric at the top
                     MetricCard(
-                        title = if (isArabic) "الإجمالي الشامل" else "Overall Total",
+                        title = when (language) {
+                            AppLanguage.AR -> "الإجمالي الشامل"
+                            AppLanguage.FR -> "Total global"
+                            AppLanguage.EN -> "Overall Total"
+                        },
                         usage = summary.total,
                         icon = Icons.Default.Public,
                         accentColor = TotalAccent,
                         language = language,
                         forcedUnit = uiState.dataUnit,
-                        secondaryInfo = if (isArabic) "100% الإجمالي" else "100% Total",
+                        secondaryInfo = when (language) {
+                            AppLanguage.AR -> "100% الإجمالي"
+                            AppLanguage.FR -> "100% Total"
+                            AppLanguage.EN -> "100% Total"
+                        },
                         testTag = "overall_metric_card",
                         isHero = true
                     )
@@ -283,7 +326,11 @@ fun DashboardScreen(
                                 horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium)
                             ) {
                                 MetricCard(
-                                    title = if (isArabic) "واي فاي" else "Wi-Fi",
+                                    title = when (language) {
+                                        AppLanguage.AR -> "واي فاي"
+                                        AppLanguage.FR -> "Wi-Fi"
+                                        AppLanguage.EN -> "Wi-Fi"
+                                    },
                                     usage = summary.wifi,
                                     icon = Icons.Default.Wifi,
                                     accentColor = WifiAccent,
@@ -296,7 +343,11 @@ fun DashboardScreen(
                                 )
 
                                 MetricCard(
-                                    title = if (isArabic) "بيانات الجوال" else "Mobile Data",
+                                    title = when (language) {
+                                        AppLanguage.AR -> "بيانات الجوال"
+                                        AppLanguage.FR -> "Données mobiles"
+                                        AppLanguage.EN -> "Mobile Data"
+                                    },
                                     usage = summary.mobile,
                                     icon = Icons.Default.SignalCellularAlt,
                                     accentColor = MobileAccent,
@@ -314,7 +365,11 @@ fun DashboardScreen(
                                 verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium)
                             ) {
                                 MetricCard(
-                                    title = if (isArabic) "واي فاي" else "Wi-Fi",
+                                    title = when (language) {
+                                        AppLanguage.AR -> "واي فاي"
+                                        AppLanguage.FR -> "Wi-Fi"
+                                        AppLanguage.EN -> "Wi-Fi"
+                                    },
                                     usage = summary.wifi,
                                     icon = Icons.Default.Wifi,
                                     accentColor = WifiAccent,
@@ -326,7 +381,11 @@ fun DashboardScreen(
                                 )
 
                                 MetricCard(
-                                    title = if (isArabic) "بيانات الجوال" else "Mobile Data",
+                                    title = when (language) {
+                                        AppLanguage.AR -> "بيانات الجوال"
+                                        AppLanguage.FR -> "Données mobiles"
+                                        AppLanguage.EN -> "Mobile Data"
+                                    },
                                     usage = summary.mobile,
                                     icon = Icons.Default.SignalCellularAlt,
                                     accentColor = MobileAccent,
@@ -381,10 +440,10 @@ fun DashboardScreen(
                                     )
                                     Spacer(modifier = Modifier.size(DesignTokens.SpacingSmall))
                                     Text(
-                                        text = if (isArabic) {
-                                            breakdown.message
-                                        } else {
-                                            "Daily breakdown is available for periods up to 60 days to protect device performance. Overall range total is fully calculated from NetworkStatsManager."
+                                        text = when (language) {
+                                            AppLanguage.AR -> breakdown.message
+                                            AppLanguage.FR -> "Le détail quotidien est disponible pour des périodes allant jusqu'à 60 jours afin de préserver les performances de l'appareil. Le total de la période est calculé avec précision via NetworkStatsManager."
+                                            AppLanguage.EN -> "Daily breakdown is available for periods up to 60 days to protect device performance. Overall range total is fully calculated from NetworkStatsManager."
                                         },
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -412,7 +471,13 @@ fun DashboardScreen(
                                         modifier = Modifier.weight(1f)
                                     )
                                     OutlinedButton(onClick = { viewModel.refreshData(force = true) }) {
-                                        Text(if (isArabic) "إعادة المحاولة" else "Retry")
+                                        Text(
+                                            when (language) {
+                                                AppLanguage.AR -> "إعادة المحاولة"
+                                                AppLanguage.FR -> "Réessayer"
+                                                AppLanguage.EN -> "Retry"
+                                            }
+                                        )
                                     }
                                 }
                             }

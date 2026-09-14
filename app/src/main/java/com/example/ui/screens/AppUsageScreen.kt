@@ -4,11 +4,8 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
 import android.provider.Settings
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,8 +26,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Android
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
-import androidx.compose.material.icons.filled.DataUsage
-import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Sort
@@ -43,7 +39,6 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -63,11 +58,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.example.R
 import com.example.data.preferences.AppLanguage
 import com.example.model.AppNetworkUsage
 import com.example.model.NetworkType
@@ -93,7 +86,6 @@ fun AppUsageScreen(
 ) {
     val context = LocalContext.current
     val language = uiState.language
-    val isArabic = language == AppLanguage.AR
 
     var showCustomRangeDialog by remember { mutableStateOf(false) }
 
@@ -119,12 +111,20 @@ fun AppUsageScreen(
                 title = {
                     Column {
                         Text(
-                            text = if (isArabic) "استهلاك التطبيقات" else "App Usage",
+                            text = when (language) {
+                                AppLanguage.AR -> "استهلاك التطبيقات"
+                                AppLanguage.FR -> "Consommation des applications"
+                                AppLanguage.EN -> "App Usage"
+                            },
                             fontWeight = FontWeight.Bold,
                             style = MaterialTheme.typography.titleLarge
                         )
                         Text(
-                            text = if (isArabic) "استهلاك بيانات الشبكة لكل تطبيق" else "Network data consumption by application",
+                            text = when (language) {
+                                AppLanguage.AR -> "استهلاك بيانات الشبكة لكل تطبيق"
+                                AppLanguage.FR -> "Consommation des données par application"
+                                AppLanguage.EN -> "Network data consumption by application"
+                            },
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -137,7 +137,11 @@ fun AppUsageScreen(
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = if (isArabic) "رجوع" else "Back"
+                            contentDescription = when (language) {
+                                AppLanguage.AR -> "رجوع"
+                                AppLanguage.FR -> "Retour"
+                                AppLanguage.EN -> "Back"
+                            }
                         )
                     }
                 },
@@ -148,7 +152,11 @@ fun AppUsageScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Refresh,
-                            contentDescription = if (isArabic) "تحديث" else "Refresh"
+                            contentDescription = when (language) {
+                                AppLanguage.AR -> "تحديث"
+                                AppLanguage.FR -> "Actualiser"
+                                AppLanguage.EN -> "Refresh"
+                            }
                         )
                     }
                 }
@@ -188,19 +196,43 @@ fun AppUsageScreen(
                     FilterChip(
                         selected = uiState.selectedFilter == NetworkType.TOTAL,
                         onClick = { viewModel.setNetworkFilter(NetworkType.TOTAL) },
-                        label = { Text(if (isArabic) "الإجمالي" else "Total") },
+                        label = {
+                            Text(
+                                when (language) {
+                                    AppLanguage.AR -> "الإجمالي"
+                                    AppLanguage.FR -> "Total"
+                                    AppLanguage.EN -> "Total"
+                                }
+                            )
+                        },
                         modifier = Modifier.testTag("filter_chip_total")
                     )
                     FilterChip(
                         selected = uiState.selectedFilter == NetworkType.WIFI,
                         onClick = { viewModel.setNetworkFilter(NetworkType.WIFI) },
-                        label = { Text(if (isArabic) "واي فاي" else "Wi-Fi") },
+                        label = {
+                            Text(
+                                when (language) {
+                                    AppLanguage.AR -> "واي فاي"
+                                    AppLanguage.FR -> "Wi-Fi"
+                                    AppLanguage.EN -> "Wi-Fi"
+                                }
+                            )
+                        },
                         modifier = Modifier.testTag("filter_chip_wifi")
                     )
                     FilterChip(
                         selected = uiState.selectedFilter == NetworkType.MOBILE,
                         onClick = { viewModel.setNetworkFilter(NetworkType.MOBILE) },
-                        label = { Text(if (isArabic) "الجوال" else "Mobile") },
+                        label = {
+                            Text(
+                                when (language) {
+                                    AppLanguage.AR -> "الجوال"
+                                    AppLanguage.FR -> "Mobile"
+                                    AppLanguage.EN -> "Mobile"
+                                }
+                            )
+                        },
                         modifier = Modifier.testTag("filter_chip_mobile")
                     )
                 }
@@ -208,10 +240,26 @@ fun AppUsageScreen(
                 // Sorting Menu
                 var sortMenuExpanded by remember { mutableStateOf(false) }
                 val currentSortLabel = when (uiState.selectedSort) {
-                    AppSortOption.TOTAL_USAGE -> if (isArabic) "الإجمالي" else "Total"
-                    AppSortOption.DOWNLOAD -> if (isArabic) "التنزيل" else "Download"
-                    AppSortOption.UPLOAD -> if (isArabic) "الرفع" else "Upload"
-                    AppSortOption.APP_NAME -> if (isArabic) "الاسم" else "Name"
+                    AppSortOption.TOTAL_USAGE -> when (language) {
+                        AppLanguage.AR -> "الإجمالي"
+                        AppLanguage.FR -> "Total"
+                        AppLanguage.EN -> "Total"
+                    }
+                    AppSortOption.DOWNLOAD -> when (language) {
+                        AppLanguage.AR -> "التنزيل"
+                        AppLanguage.FR -> "Téléchargement"
+                        AppLanguage.EN -> "Download"
+                    }
+                    AppSortOption.UPLOAD -> when (language) {
+                        AppLanguage.AR -> "الرفع"
+                        AppLanguage.FR -> "Téléversement"
+                        AppLanguage.EN -> "Upload"
+                    }
+                    AppSortOption.APP_NAME -> when (language) {
+                        AppLanguage.AR -> "الاسم"
+                        AppLanguage.FR -> "Nom"
+                        AppLanguage.EN -> "Name"
+                    }
                 }
 
                 Box {
@@ -233,7 +281,15 @@ fun AppUsageScreen(
                         onDismissRequest = { sortMenuExpanded = false }
                     ) {
                         DropdownMenuItem(
-                            text = { Text(if (isArabic) "إجمالي الاستهلاك" else "Total Usage") },
+                            text = {
+                                Text(
+                                    when (language) {
+                                        AppLanguage.AR -> "إجمالي الاستهلاك"
+                                        AppLanguage.FR -> "Consommation totale"
+                                        AppLanguage.EN -> "Total Usage"
+                                    }
+                                )
+                            },
                             onClick = {
                                 viewModel.setSortOption(AppSortOption.TOTAL_USAGE)
                                 sortMenuExpanded = false
@@ -241,7 +297,15 @@ fun AppUsageScreen(
                             modifier = Modifier.testTag("sort_option_total")
                         )
                         DropdownMenuItem(
-                            text = { Text(if (isArabic) "التنزيل" else "Download") },
+                            text = {
+                                Text(
+                                    when (language) {
+                                        AppLanguage.AR -> "التنزيل"
+                                        AppLanguage.FR -> "Téléchargement"
+                                        AppLanguage.EN -> "Download"
+                                    }
+                                )
+                            },
                             onClick = {
                                 viewModel.setSortOption(AppSortOption.DOWNLOAD)
                                 sortMenuExpanded = false
@@ -249,7 +313,15 @@ fun AppUsageScreen(
                             modifier = Modifier.testTag("sort_option_download")
                         )
                         DropdownMenuItem(
-                            text = { Text(if (isArabic) "الرفع" else "Upload") },
+                            text = {
+                                Text(
+                                    when (language) {
+                                        AppLanguage.AR -> "الرفع"
+                                        AppLanguage.FR -> "Téléversement"
+                                        AppLanguage.EN -> "Upload"
+                                    }
+                                )
+                            },
                             onClick = {
                                 viewModel.setSortOption(AppSortOption.UPLOAD)
                                 sortMenuExpanded = false
@@ -257,7 +329,15 @@ fun AppUsageScreen(
                             modifier = Modifier.testTag("sort_option_upload")
                         )
                         DropdownMenuItem(
-                            text = { Text(if (isArabic) "اسم التطبيق" else "App Name") },
+                            text = {
+                                Text(
+                                    when (language) {
+                                        AppLanguage.AR -> "اسم التطبيق"
+                                        AppLanguage.FR -> "Nom de l'application"
+                                        AppLanguage.EN -> "App Name"
+                                    }
+                                )
+                            },
                             onClick = {
                                 viewModel.setSortOption(AppSortOption.APP_NAME)
                                 sortMenuExpanded = false
@@ -270,18 +350,16 @@ fun AppUsageScreen(
 
             Spacer(modifier = Modifier.height(DesignTokens.SpacingSmall))
 
-            // 3. Content State
+            // 3. Main Content: Loading, Error, Empty, List
             when (val state = uiState.contentState) {
                 is AppUsageContentState.Loading -> {
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .testTag("loading_state"),
+                            .testTag("loading_indicator"),
                         contentAlignment = Alignment.Center
                     ) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.testTag("loading_indicator")
-                        )
+                        CircularProgressIndicator()
                     }
                 }
                 is AppUsageContentState.Empty -> {
@@ -305,15 +383,18 @@ fun AppUsageScreen(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Icon(
-                                    imageVector = Icons.Default.DataUsage,
+                                    imageVector = Icons.Default.Info,
                                     contentDescription = null,
                                     modifier = Modifier.size(48.dp),
                                     tint = MaterialTheme.colorScheme.primary
                                 )
                                 Spacer(modifier = Modifier.height(DesignTokens.SpacingMedium))
                                 Text(
-                                    text = if (isArabic) "لا يوجد استهلاك للتطبيقات مسجل في هذه الفترة."
-                                    else "No app network activity recorded for this period.",
+                                    text = when (language) {
+                                        AppLanguage.AR -> "لا يوجد استهلاك للتطبيقات مسجل في هذه الفترة."
+                                        AppLanguage.FR -> "Aucune consommation réseau enregistrée pour cette période."
+                                        AppLanguage.EN -> "No app network activity recorded for this period."
+                                    },
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -349,8 +430,11 @@ fun AppUsageScreen(
                                 )
                                 Spacer(modifier = Modifier.height(DesignTokens.SpacingMedium))
                                 Text(
-                                    text = if (isArabic) "مطلوب إذن الوصول لبيانات الاستخدام لعرض استهلاك بيانات التطبيقات."
-                                    else "Usage access permission is required to view per-app data consumption.",
+                                    text = when (language) {
+                                        AppLanguage.AR -> "مطلوب إذن الوصول لبيانات الاستخدام لعرض استهلاك بيانات التطبيقات."
+                                        AppLanguage.FR -> "L'accès aux données d'utilisation est requis pour afficher la consommation par application."
+                                        AppLanguage.EN -> "Usage access permission is required to view per-app data consumption."
+                                    },
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onErrorContainer
                                 )
@@ -367,14 +451,26 @@ fun AppUsageScreen(
                                     },
                                     modifier = Modifier.testTag("open_settings_button")
                                 ) {
-                                    Text(if (isArabic) "فتح الإعدادات" else "Open Settings")
+                                    Text(
+                                        when (language) {
+                                            AppLanguage.AR -> "فتح الإعدادات"
+                                            AppLanguage.FR -> "Ouvrir les paramètres"
+                                            AppLanguage.EN -> "Open Settings"
+                                        }
+                                    )
                                 }
                                 Spacer(modifier = Modifier.height(DesignTokens.SpacingSmall))
                                 OutlinedButton(
                                     onClick = { viewModel.refreshData() },
                                     modifier = Modifier.testTag("retry_permission_button")
                                 ) {
-                                    Text(if (isArabic) "إعادة المحاولة" else "Retry")
+                                    Text(
+                                        when (language) {
+                                            AppLanguage.AR -> "إعادة المحاولة"
+                                            AppLanguage.FR -> "Réessayer"
+                                            AppLanguage.EN -> "Retry"
+                                        }
+                                    )
                                 }
                             }
                         }
@@ -410,7 +506,13 @@ fun AppUsageScreen(
                                     onClick = { viewModel.refreshData() },
                                     modifier = Modifier.testTag("retry_error_button")
                                 ) {
-                                    Text(if (isArabic) "إعادة المحاولة" else "Retry")
+                                    Text(
+                                        when (language) {
+                                            AppLanguage.AR -> "إعادة المحاولة"
+                                            AppLanguage.FR -> "Réessayer"
+                                            AppLanguage.EN -> "Retry"
+                                        }
+                                    )
                                 }
                             }
                         }
@@ -428,13 +530,10 @@ fun AppUsageScreen(
                             items = state.apps,
                             key = { it.uid }
                         ) { app ->
-                            AppUsageRowItem(
+                            AppUsageItem(
                                 app = app,
                                 uiState = uiState
                             )
-                        }
-                        item {
-                            Spacer(modifier = Modifier.height(DesignTokens.SpacingLarge))
                         }
                     }
                 }
@@ -444,13 +543,12 @@ fun AppUsageScreen(
 }
 
 @Composable
-fun AppUsageRowItem(
+fun AppUsageItem(
     app: AppNetworkUsage,
     uiState: AppUsageUiState,
     modifier: Modifier = Modifier
 ) {
     val language = uiState.language
-    val isArabic = language == AppLanguage.AR
     val dataUnit = uiState.dataUnit
 
     val totalFormatted = ByteFormatter.format(app.totalBytes, dataUnit).getDisplay(language)
@@ -518,7 +616,11 @@ fun AppUsageRowItem(
                     ) {
                         Icon(
                             imageVector = Icons.Default.ArrowDownward,
-                            contentDescription = if (isArabic) "تنزيل" else "Download",
+                            contentDescription = when (language) {
+                                AppLanguage.AR -> "تنزيل"
+                                AppLanguage.FR -> "Téléchargement"
+                                AppLanguage.EN -> "Download"
+                            },
                             tint = DownloadAccent,
                             modifier = Modifier.size(12.dp)
                         )
@@ -536,7 +638,11 @@ fun AppUsageRowItem(
                     ) {
                         Icon(
                             imageVector = Icons.Default.ArrowUpward,
-                            contentDescription = if (isArabic) "رفع" else "Upload",
+                            contentDescription = when (language) {
+                                AppLanguage.AR -> "رفع"
+                                AppLanguage.FR -> "Téléversement"
+                                AppLanguage.EN -> "Upload"
+                            },
                             tint = UploadAccent,
                             modifier = Modifier.size(12.dp)
                         )

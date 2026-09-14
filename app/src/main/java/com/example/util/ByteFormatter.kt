@@ -8,13 +8,19 @@ import java.util.Locale
 data class FormattedByteResult(
     val valueString: String,
     val unitSymbolEn: String,
-    val unitSymbolAr: String
+    val unitSymbolAr: String,
+    val unitSymbolFr: String = unitSymbolEn
 ) {
     val displayEn: String get() = "$valueString $unitSymbolEn"
     val displayAr: String get() = "$valueString $unitSymbolAr"
+    val displayFr: String get() = "$valueString $unitSymbolFr"
     val displayDefault: String get() = displayEn
 
-    fun getDisplay(language: AppLanguage): String = if (language == AppLanguage.AR) displayAr else displayEn
+    fun getDisplay(language: AppLanguage): String = when (language) {
+        AppLanguage.AR -> displayAr
+        AppLanguage.FR -> displayFr
+        AppLanguage.EN -> displayEn
+    }
 }
 
 object ByteFormatter {
@@ -36,7 +42,8 @@ object ByteFormatter {
         return FormattedByteResult(
             valueString = formattedNumber,
             unitSymbolEn = targetUnit.symbolEn,
-            unitSymbolAr = targetUnit.symbolAr
+            unitSymbolAr = targetUnit.symbolAr,
+            unitSymbolFr = targetUnit.symbolFr
         )
     }
 

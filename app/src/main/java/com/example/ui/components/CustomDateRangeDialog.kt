@@ -45,7 +45,6 @@ fun CustomDateRangeDialog(
     onDismiss: () -> Unit,
     language: AppLanguage = AppLanguage.AR
 ) {
-    val isArabic = language == AppLanguage.AR
     val zoneId = DateTimeUtils.getLocalZoneId()
     val today = DateTimeUtils.today(zoneId)
 
@@ -92,12 +91,24 @@ fun CustomDateRangeDialog(
                         pickingStart = null
                     }
                 ) {
-                    Text(if (isArabic) "موافق" else "OK")
+                    Text(
+                        when (language) {
+                            AppLanguage.AR -> "موافق"
+                            AppLanguage.FR -> "OK"
+                            AppLanguage.EN -> "OK"
+                        }
+                    )
                 }
             },
             dismissButton = {
                 TextButton(onClick = { pickingStart = null }) {
-                    Text(if (isArabic) "إلغاء" else "Cancel")
+                    Text(
+                        when (language) {
+                            AppLanguage.AR -> "إلغاء"
+                            AppLanguage.FR -> "Annuler"
+                            AppLanguage.EN -> "Cancel"
+                        }
+                    )
                 }
             }
         ) {
@@ -118,7 +129,11 @@ fun CustomDateRangeDialog(
                     .padding(DesignTokens.SpacingLarge)
             ) {
                 Text(
-                    text = if (isArabic) "تحديد فترة مخصصة" else "Select Custom Period",
+                    text = when (language) {
+                        AppLanguage.AR -> "تحديد فترة مخصصة"
+                        AppLanguage.FR -> "Sélectionner une période personnalisée"
+                        AppLanguage.EN -> "Select Custom Period"
+                    },
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
@@ -129,7 +144,12 @@ fun CustomDateRangeDialog(
                     onClick = { pickingStart = true },
                     modifier = Modifier.fillMaxWidth().testTag("start_date_picker_button")
                 ) {
-                    val label = if (isArabic) "من: ${DateTimeUtils.formatDateArabic(startDate)}" else "From: ${DateTimeUtils.formatDateEnglish(startDate)}"
+                    val formatted = DateTimeUtils.formatDate(startDate, language)
+                    val label = when (language) {
+                        AppLanguage.AR -> "من: $formatted"
+                        AppLanguage.FR -> "Du : $formatted"
+                        AppLanguage.EN -> "From: $formatted"
+                    }
                     Text(text = label)
                 }
 
@@ -139,7 +159,12 @@ fun CustomDateRangeDialog(
                     onClick = { pickingStart = false },
                     modifier = Modifier.fillMaxWidth().testTag("end_date_picker_button")
                 ) {
-                    val label = if (isArabic) "إلى: ${DateTimeUtils.formatDateArabic(endDate)}" else "To: ${DateTimeUtils.formatDateEnglish(endDate)}"
+                    val formatted = DateTimeUtils.formatDate(endDate, language)
+                    val label = when (language) {
+                        AppLanguage.AR -> "إلى: $formatted"
+                        AppLanguage.FR -> "Au : $formatted"
+                        AppLanguage.EN -> "To: $formatted"
+                    }
                     Text(text = label)
                 }
 
@@ -150,7 +175,13 @@ fun CustomDateRangeDialog(
                     horizontalArrangement = Arrangement.End
                 ) {
                     TextButton(onClick = onDismiss) {
-                        Text(if (isArabic) "إلغاء" else "Cancel")
+                        Text(
+                            when (language) {
+                                AppLanguage.AR -> "إلغاء"
+                                AppLanguage.FR -> "Annuler"
+                                AppLanguage.EN -> "Cancel"
+                            }
+                        )
                     }
                     Button(
                         onClick = {
@@ -160,7 +191,13 @@ fun CustomDateRangeDialog(
                         },
                         modifier = Modifier.testTag("confirm_custom_range_button")
                     ) {
-                        Text(if (isArabic) "تطبيق" else "Apply")
+                        Text(
+                            when (language) {
+                                AppLanguage.AR -> "تطبيق"
+                                AppLanguage.FR -> "Appliquer"
+                                AppLanguage.EN -> "Apply"
+                            }
+                        )
                     }
                 }
             }

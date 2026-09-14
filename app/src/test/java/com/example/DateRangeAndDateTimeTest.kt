@@ -254,5 +254,11 @@ class DateRangeAndDateTimeTest {
 
         val enMulti = multiDay.formatDisplay(AppLanguage.EN)
         assertTrue(enMulti.contains("May 1, 2024") && enMulti.contains("May 10, 2024"))
+
+        val frSingle = singleDay.formatDisplay(AppLanguage.FR)
+        assertTrue(frSingle.contains("20") && frSingle.contains("2024"))
+
+        val frMulti = multiDay.formatDisplay(AppLanguage.FR)
+        assertTrue(frMulti.contains("2024"))
     }
 }

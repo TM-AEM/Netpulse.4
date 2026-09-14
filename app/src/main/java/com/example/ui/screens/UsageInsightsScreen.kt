@@ -95,7 +95,6 @@ fun UsageInsightsScreen(
 ) {
     val context = LocalContext.current
     val language = uiState.language
-    val isArabic = language == AppLanguage.AR
 
     val localizedContext = remember(context, language) {
         val conf = Configuration(context.resources.configuration)
@@ -455,7 +454,6 @@ private fun AverageDailyUsageCard(
 ) {
     val language = uiState.language
     val dataUnit = uiState.dataUnit
-    val isArabic = language == AppLanguage.AR
     val daily = comparison.averageDailyUsage
     val perDaySuffix = stringResource(R.string.insights_per_day)
 
@@ -463,7 +461,11 @@ private fun AverageDailyUsageCard(
     val downloadPerDay = "${ByteFormatter.format(daily.downloadBytes, dataUnit).getDisplay(language)} $perDaySuffix"
     val uploadPerDay = "${ByteFormatter.format(daily.uploadBytes, dataUnit).getDisplay(language)} $perDaySuffix"
 
-    val daysText = if (isArabic) "${daily.daysCount} أيام" else "${daily.daysCount} days"
+    val daysText = when (language) {
+        AppLanguage.AR -> "${daily.daysCount} أيام"
+        AppLanguage.FR -> "${daily.daysCount} jours"
+        AppLanguage.EN -> "${daily.daysCount} days"
+    }
 
     Card(
         modifier = modifier

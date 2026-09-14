@@ -38,7 +38,6 @@ fun ConnectionStatusBanner(
     modifier: Modifier = Modifier,
     language: AppLanguage = AppLanguage.AR
 ) {
-    val isArabic = language == AppLanguage.AR
     val isConnected = connectionStatus.isConnected
     val disconnectedColor = MaterialTheme.colorScheme.onSurfaceVariant
     val disconnectedIndicator = MaterialTheme.colorScheme.error
@@ -47,22 +46,38 @@ fun ConnectionStatusBanner(
         !isConnected -> Triple(
             Icons.Default.WifiOff,
             disconnectedColor,
-            if (isArabic) "لا يوجد اتصال بالإنترنت" else "No Internet Connection"
+            when (language) {
+                AppLanguage.AR -> "لا يوجد اتصال بالإنترنت"
+                AppLanguage.FR -> "Aucune connexion Internet"
+                AppLanguage.EN -> "No Internet Connection"
+            }
         )
         connectionStatus.networkType == NetworkType.WIFI -> Triple(
             Icons.Default.Wifi,
             WifiAccent,
-            if (isArabic) "متصل عبر شبكة Wi-Fi" else "Connected to Wi-Fi"
+            when (language) {
+                AppLanguage.AR -> "متصل عبر شبكة Wi-Fi"
+                AppLanguage.FR -> "Connecté au Wi-Fi"
+                AppLanguage.EN -> "Connected to Wi-Fi"
+            }
         )
         connectionStatus.networkType == NetworkType.MOBILE -> Triple(
             Icons.Default.SignalCellularAlt,
             MobileAccent,
-            if (isArabic) "متصل عبر بيانات الجوال" else "Connected to Mobile Data"
+            when (language) {
+                AppLanguage.AR -> "متصل عبر بيانات الجوال"
+                AppLanguage.FR -> "Connecté aux données mobiles"
+                AppLanguage.EN -> "Connected to Mobile Data"
+            }
         )
         else -> Triple(
             Icons.Default.Wifi,
             MaterialTheme.colorScheme.primary,
-            if (isArabic) "متصل (${connectionStatus.labelAr})" else "Connected (${connectionStatus.labelEn})"
+            when (language) {
+                AppLanguage.AR -> "متصل (${connectionStatus.labelAr})"
+                AppLanguage.FR -> "Connecté (${connectionStatus.labelEn})"
+                AppLanguage.EN -> "Connected (${connectionStatus.labelEn})"
+            }
         )
     }
 
@@ -103,7 +118,11 @@ fun ConnectionStatusBanner(
             if (connectionStatus.isMetered && isConnected) {
                 Spacer(modifier = Modifier.width(DesignTokens.SpacingSmall))
                 Text(
-                    text = if (isArabic) "(شبكة محدودة)" else "(Metered)",
+                    text = when (language) {
+                        AppLanguage.AR -> "(شبكة محدودة)"
+                        AppLanguage.FR -> "(Réseau mesuré)"
+                        AppLanguage.EN -> "(Metered)"
+                    },
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.error
                 )

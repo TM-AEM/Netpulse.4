@@ -70,7 +70,6 @@ fun UsageBarChart(
 ) {
     if (dailyData.isEmpty()) return
 
-    val isArabic = language == AppLanguage.AR
     val maxBytes = dailyData.maxOfOrNull { it.total.totalBytes }?.coerceAtLeast(1L) ?: 1L
     var selectedDay by remember { mutableStateOf<DailyNetworkUsage?>(null) }
 
@@ -94,7 +93,11 @@ fun UsageBarChart(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = if (isArabic) "تفصيل الاستهلاك اليومي" else "Daily Usage Breakdown",
+                    text = when (language) {
+                        AppLanguage.AR -> "تفصيل الاستهلاك اليومي"
+                        AppLanguage.FR -> "Détail de la consommation quotidienne"
+                        AppLanguage.EN -> "Daily Usage Breakdown"
+                    },
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface
@@ -112,7 +115,11 @@ fun UsageBarChart(
                         )
                         Spacer(modifier = Modifier.width(DesignTokens.SpacingTiny))
                         Text(
-                            text = if (isArabic) "واي فاي" else "Wi-Fi",
+                            text = when (language) {
+                                AppLanguage.AR -> "واي فاي"
+                                AppLanguage.FR -> "Wi-Fi"
+                                AppLanguage.EN -> "Wi-Fi"
+                            },
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -126,7 +133,11 @@ fun UsageBarChart(
                         )
                         Spacer(modifier = Modifier.width(DesignTokens.SpacingTiny))
                         Text(
-                            text = if (isArabic) "بيانات جوال" else "Mobile",
+                            text = when (language) {
+                                AppLanguage.AR -> "بيانات جوال"
+                                AppLanguage.FR -> "Mobile"
+                                AppLanguage.EN -> "Mobile"
+                            },
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -186,10 +197,10 @@ fun UsageBarChart(
                         val dayName = getShortDayName(dayUsage.date, language)
                         val dateNumber = "${dayUsage.date.dayOfMonth}/${dayUsage.date.monthValue}"
 
-                        val a11yDescription = if (isArabic) {
-                            "$dayName $dateNumber: الإجمالي ${ByteFormatter.format(total, forcedUnit).getDisplay(language)}"
-                        } else {
-                            "$dayName $dateNumber: Total ${ByteFormatter.format(total, forcedUnit).getDisplay(language)}"
+                        val a11yDescription = when (language) {
+                            AppLanguage.AR -> "$dayName $dateNumber: الإجمالي ${ByteFormatter.format(total, forcedUnit).getDisplay(language)}"
+                            AppLanguage.FR -> "$dayName $dateNumber : Total ${ByteFormatter.format(total, forcedUnit).getDisplay(language)}"
+                            AppLanguage.EN -> "$dayName $dateNumber: Total ${ByteFormatter.format(total, forcedUnit).getDisplay(language)}"
                         }
 
                         Column(
@@ -305,16 +316,8 @@ fun UsageBarChart(
                 exit = fadeOut()
             ) {
                 selectedDay?.let { day ->
-                    val formattedDate = if (isArabic) {
-                        DateTimeUtils.formatDateArabic(day.date)
-                    } else {
-                        DateTimeUtils.formatDateEnglish(day.date)
-                    }
-                    val dayOfWeek = if (isArabic) {
-                        DateTimeUtils.formatDayNameArabic(day.date)
-                    } else {
-                        day.date.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.ENGLISH)
-                    }
+                    val formattedDate = DateTimeUtils.formatDate(day.date, language)
+                    val dayOfWeek = DateTimeUtils.formatDayName(day.date, language)
                     val totalStr = ByteFormatter.format(day.total.totalBytes, forcedUnit).getDisplay(language)
                     val wifiStr = ByteFormatter.format(day.wifi.totalBytes, forcedUnit).getDisplay(language)
                     val mobileStr = ByteFormatter.format(day.mobile.totalBytes, forcedUnit).getDisplay(language)
@@ -363,7 +366,11 @@ fun UsageBarChart(
                                 ) {
                                     Icon(
                                         imageVector = Icons.Default.Close,
-                                        contentDescription = if (isArabic) "إغلاق" else "Close",
+                                        contentDescription = when (language) {
+                                            AppLanguage.AR -> "إغلاق"
+                                            AppLanguage.FR -> "Fermer"
+                                            AppLanguage.EN -> "Close"
+                                        },
                                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                         modifier = Modifier.size(16.dp)
                                     )
@@ -381,7 +388,11 @@ fun UsageBarChart(
                                 // Total
                                 Column {
                                     Text(
-                                        text = if (isArabic) "الإجمالي" else "Total",
+                                        text = when (language) {
+                                            AppLanguage.AR -> "الإجمالي"
+                                            AppLanguage.FR -> "Total"
+                                            AppLanguage.EN -> "Total"
+                                        },
                                         style = MaterialTheme.typography.labelSmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
@@ -404,7 +415,11 @@ fun UsageBarChart(
                                     Spacer(modifier = Modifier.width(DesignTokens.SpacingSmall))
                                     Column {
                                         Text(
-                                            text = if (isArabic) "واي فاي" else "Wi-Fi",
+                                            text = when (language) {
+                                                AppLanguage.AR -> "واي فاي"
+                                                AppLanguage.FR -> "Wi-Fi"
+                                                AppLanguage.EN -> "Wi-Fi"
+                                            },
                                             style = MaterialTheme.typography.labelSmall,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
@@ -428,7 +443,11 @@ fun UsageBarChart(
                                     Spacer(modifier = Modifier.width(DesignTokens.SpacingSmall))
                                     Column {
                                         Text(
-                                            text = if (isArabic) "بيانات جوال" else "Mobile",
+                                            text = when (language) {
+                                                AppLanguage.AR -> "بيانات جوال"
+                                                AppLanguage.FR -> "Mobile"
+                                                AppLanguage.EN -> "Mobile"
+                                            },
                                             style = MaterialTheme.typography.labelSmall,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
@@ -450,8 +469,8 @@ fun UsageBarChart(
 }
 
 private fun getShortDayName(date: LocalDate, language: AppLanguage): String {
-    return if (language == AppLanguage.AR) {
-        when (date.dayOfWeek) {
+    return when (language) {
+        AppLanguage.AR -> when (date.dayOfWeek) {
             DayOfWeek.SATURDAY -> "سبت"
             DayOfWeek.SUNDAY -> "أحد"
             DayOfWeek.MONDAY -> "إثنين"
@@ -461,8 +480,17 @@ private fun getShortDayName(date: LocalDate, language: AppLanguage): String {
             DayOfWeek.FRIDAY -> "جمعة"
             null -> ""
         }
-    } else {
-        when (date.dayOfWeek) {
+        AppLanguage.FR -> when (date.dayOfWeek) {
+            DayOfWeek.SATURDAY -> "Sam"
+            DayOfWeek.SUNDAY -> "Dim"
+            DayOfWeek.MONDAY -> "Lun"
+            DayOfWeek.TUESDAY -> "Mar"
+            DayOfWeek.WEDNESDAY -> "Mer"
+            DayOfWeek.THURSDAY -> "Jeu"
+            DayOfWeek.FRIDAY -> "Ven"
+            null -> ""
+        }
+        AppLanguage.EN -> when (date.dayOfWeek) {
             DayOfWeek.SATURDAY -> "Sat"
             DayOfWeek.SUNDAY -> "Sun"
             DayOfWeek.MONDAY -> "Mon"

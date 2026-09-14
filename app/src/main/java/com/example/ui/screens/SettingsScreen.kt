@@ -73,8 +73,6 @@ fun SettingsScreen(
     onNavigateToUsageInsights: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    val isArabic = language == AppLanguage.AR
-
     var showThemeDialog by remember { mutableStateOf(false) }
     var showLanguageDialog by remember { mutableStateOf(false) }
     var showUnitDialog by remember { mutableStateOf(false) }
@@ -82,10 +80,14 @@ fun SettingsScreen(
 
     if (showThemeDialog) {
         OptionSelectionDialog(
-            title = if (isArabic) "اختر مظهر التطبيق" else "Choose App Theme",
+            title = when (language) {
+                AppLanguage.AR -> "اختر مظهر التطبيق"
+                AppLanguage.FR -> "Choisir le thème"
+                AppLanguage.EN -> "Choose App Theme"
+            },
             options = AppThemeMode.entries.toList(),
             selectedOption = themeMode,
-            optionLabel = { if (isArabic) it.labelAr else it.labelEn },
+            optionLabel = { it.getLabel(language) },
             onSelect = {
                 appSettingsPreferences.setThemeMode(it)
                 showThemeDialog = false
@@ -96,10 +98,14 @@ fun SettingsScreen(
 
     if (showLanguageDialog) {
         OptionSelectionDialog(
-            title = if (isArabic) "اختر لغة التطبيق" else "Choose App Language",
+            title = when (language) {
+                AppLanguage.AR -> "اختر لغة التطبيق"
+                AppLanguage.FR -> "Choisir la langue"
+                AppLanguage.EN -> "Choose App Language"
+            },
             options = AppLanguage.entries.toList(),
             selectedOption = language,
-            optionLabel = { if (isArabic) it.labelAr else it.labelEn },
+            optionLabel = { it.getLabel(language) },
             onSelect = {
                 appSettingsPreferences.setLanguage(it)
                 showLanguageDialog = false
@@ -110,10 +116,14 @@ fun SettingsScreen(
 
     if (showUnitDialog) {
         OptionSelectionDialog(
-            title = if (isArabic) "وحدة عرض البيانات" else "Data Display Unit",
+            title = when (language) {
+                AppLanguage.AR -> "وحدة عرض البيانات"
+                AppLanguage.FR -> "Unité d'affichage des données"
+                AppLanguage.EN -> "Data Display Unit"
+            },
             options = AppDataUnit.entries.toList(),
             selectedOption = dataUnit,
-            optionLabel = { if (isArabic) it.labelAr else it.labelEn },
+            optionLabel = { it.getLabel(language) },
             onSelect = {
                 appSettingsPreferences.setDataUnit(it)
                 showUnitDialog = false
@@ -124,10 +134,14 @@ fun SettingsScreen(
 
     if (showRefreshDialog) {
         OptionSelectionDialog(
-            title = if (isArabic) "طريقة تحديث البيانات" else "Refresh Mode",
+            title = when (language) {
+                AppLanguage.AR -> "طريقة تحديث البيانات"
+                AppLanguage.FR -> "Mode d'actualisation"
+                AppLanguage.EN -> "Refresh Mode"
+            },
             options = AppRefreshMode.entries.toList(),
             selectedOption = refreshMode,
-            optionLabel = { if (isArabic) it.labelAr else it.labelEn },
+            optionLabel = { it.getLabel(language) },
             onSelect = {
                 appSettingsPreferences.setRefreshMode(it)
                 showRefreshDialog = false
@@ -144,7 +158,11 @@ fun SettingsScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = if (isArabic) "الإعدادات" else "Settings",
+                        text = when (language) {
+                            AppLanguage.AR -> "الإعدادات"
+                            AppLanguage.FR -> "Paramètres"
+                            AppLanguage.EN -> "Settings"
+                        },
                         fontWeight = FontWeight.Bold
                     )
                 },
@@ -155,7 +173,11 @@ fun SettingsScreen(
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = if (isArabic) "رجوع" else "Back"
+                            contentDescription = when (language) {
+                                AppLanguage.AR -> "رجوع"
+                                AppLanguage.FR -> "Retour"
+                                AppLanguage.EN -> "Back"
+                            }
                         )
                     }
                 }
@@ -170,68 +192,134 @@ fun SettingsScreen(
                 .padding(DesignTokens.SpacingMedium),
             verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium)
         ) {
-            SettingsCategory(title = if (isArabic) "المظهر واللغة" else "Appearance") {
+            SettingsCategory(
+                title = when (language) {
+                    AppLanguage.AR -> "المظهر واللغة"
+                    AppLanguage.FR -> "Apparence et langue"
+                    AppLanguage.EN -> "Appearance"
+                }
+            ) {
                 SettingsItem(
                     icon = Icons.Default.Palette,
-                    title = if (isArabic) "المظهر" else "Theme",
-                    subtitle = if (isArabic) themeMode.labelAr else themeMode.labelEn,
+                    title = when (language) {
+                        AppLanguage.AR -> "المظهر"
+                        AppLanguage.FR -> "Thème"
+                        AppLanguage.EN -> "Theme"
+                    },
+                    subtitle = themeMode.getLabel(language),
                     onClick = { showThemeDialog = true },
                     testTag = "theme_settings_item"
                 )
                 SettingsItem(
                     icon = Icons.Default.Language,
-                    title = if (isArabic) "اللغة" else "Language",
-                    subtitle = if (isArabic) language.labelAr else language.labelEn,
+                    title = when (language) {
+                        AppLanguage.AR -> "اللغة"
+                        AppLanguage.FR -> "Langue"
+                        AppLanguage.EN -> "Language"
+                    },
+                    subtitle = language.getLabel(language),
                     onClick = { showLanguageDialog = true },
                     testTag = "language_settings_item"
                 )
                 SettingsItem(
                     icon = Icons.Default.Straighten,
-                    title = if (isArabic) "وحدة البيانات" else "Data Unit",
-                    subtitle = if (isArabic) dataUnit.labelAr else dataUnit.labelEn,
+                    title = when (language) {
+                        AppLanguage.AR -> "وحدة البيانات"
+                        AppLanguage.FR -> "Unité de données"
+                        AppLanguage.EN -> "Data Unit"
+                    },
+                    subtitle = dataUnit.getLabel(language),
                     onClick = { showUnitDialog = true },
                     testTag = "unit_settings_item"
                 )
             }
 
-            SettingsCategory(title = if (isArabic) "السلوك والتحديث" else "Behavior & Refresh") {
+            SettingsCategory(
+                title = when (language) {
+                    AppLanguage.AR -> "السلوك والتحديث"
+                    AppLanguage.FR -> "Comportement et actualisation"
+                    AppLanguage.EN -> "Behavior & Refresh"
+                }
+            ) {
                 SettingsItem(
                     icon = Icons.Default.Sync,
-                    title = if (isArabic) "تحديث البيانات" else "Data Refresh",
-                    subtitle = if (isArabic) refreshMode.labelAr else refreshMode.labelEn,
+                    title = when (language) {
+                        AppLanguage.AR -> "تحديث البيانات"
+                        AppLanguage.FR -> "Actualisation des données"
+                        AppLanguage.EN -> "Data Refresh"
+                    },
+                    subtitle = refreshMode.getLabel(language),
                     onClick = { showRefreshDialog = true },
                     testTag = "refresh_settings_item"
                 )
             }
 
-            SettingsCategory(title = if (isArabic) "خطة البيانات" else "Data Plan") {
+            SettingsCategory(
+                title = when (language) {
+                    AppLanguage.AR -> "خطة البيانات"
+                    AppLanguage.FR -> "Forfait de données"
+                    AppLanguage.EN -> "Data Plan"
+                }
+            ) {
                 val dataPlanConfig by appSettingsPreferences.dataPlanConfig.collectAsState()
                 val planSubtitle = if (dataPlanConfig.enabled && dataPlanConfig.limitBytes > 0L) {
                     val formatted = ByteFormatter.format(dataPlanConfig.limitBytes).getDisplay(language)
-                    if (isArabic) "مفعّلة ($formatted)" else "Active ($formatted)"
+                    when (language) {
+                        AppLanguage.AR -> "مفعّلة ($formatted)"
+                        AppLanguage.FR -> "Actif ($formatted)"
+                        AppLanguage.EN -> "Active ($formatted)"
+                    }
                 } else {
-                    if (isArabic) "معطلة" else "Disabled"
+                    when (language) {
+                        AppLanguage.AR -> "معطلة"
+                        AppLanguage.FR -> "Désactivé"
+                        AppLanguage.EN -> "Disabled"
+                    }
                 }
                 SettingsItem(
                     icon = Icons.Default.PieChart,
-                    title = if (isArabic) "خطة واستهلاك البيانات" else "Data Plan & Limits",
+                    title = when (language) {
+                        AppLanguage.AR -> "خطة واستهلاك البيانات"
+                        AppLanguage.FR -> "Forfait et limites de données"
+                        AppLanguage.EN -> "Data Plan & Limits"
+                    },
                     subtitle = planSubtitle,
                     onClick = onNavigateToDataPlan,
                     testTag = "data_plan_settings_item"
                 )
             }
 
-            SettingsCategory(title = if (isArabic) "رؤى الاستهلاك" else "Usage Insights") {
+            SettingsCategory(
+                title = when (language) {
+                    AppLanguage.AR -> "رؤى الاستهلاك"
+                    AppLanguage.FR -> "Aperçu de la consommation"
+                    AppLanguage.EN -> "Usage Insights"
+                }
+            ) {
                 SettingsItem(
                     icon = Icons.Default.TrendingUp,
-                    title = if (isArabic) "رؤى واتجاهات الاستهلاك" else "Usage Insights & Trends",
-                    subtitle = if (isArabic) "مقارنة الفترات والمتوسط اليومي للاستهلاك" else "Compare periods and view daily averages",
+                    title = when (language) {
+                        AppLanguage.AR -> "رؤى واتجاهات الاستهلاك"
+                        AppLanguage.FR -> "Tendances de consommation"
+                        AppLanguage.EN -> "Usage Insights & Trends"
+                    },
+                    subtitle = when (language) {
+                        AppLanguage.AR -> "مقارنة الفترات والمتوسط اليومي للاستهلاك"
+                        AppLanguage.FR -> "Comparer les périodes et voir les moyennes"
+                        AppLanguage.EN -> "Compare periods and view daily averages"
+                    },
                     onClick = onNavigateToUsageInsights,
                     testTag = "insights_settings_item"
                 )
             }
 
-            SettingsCategory(title = if (isArabic) "المطور والتشخيص" else "Developer & Diagnostics") {
+            SettingsCategory(
+                title = when (language) {
+                    AppLanguage.AR -> "المطور والتشخيص"
+                    AppLanguage.FR -> "Développeur et diagnostics"
+                    AppLanguage.EN -> "Developer & Diagnostics"
+                }
+            ) {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(DesignTokens.CardCornerRadius),
@@ -253,12 +341,20 @@ fun SettingsScreen(
                             Spacer(modifier = Modifier.width(DesignTokens.SpacingMedium))
                             Column {
                                 Text(
-                                    text = if (isArabic) "وضع المطور (تشخيص NetworkStats)" else "Developer Mode (Diagnostics)",
+                                    text = when (language) {
+                                        AppLanguage.AR -> "وضع المطور (تشخيص NetworkStats)"
+                                        AppLanguage.FR -> "Mode développeur (Diagnostics)"
+                                        AppLanguage.EN -> "Developer Mode (Diagnostics)"
+                                    },
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Medium
                                 )
                                 Text(
-                                    text = if (isArabic) "إظهار عينة الحزم وتحليل الفروقات" else "Show raw buckets and discrepancy breakdown",
+                                    text = when (language) {
+                                        AppLanguage.AR -> "إظهار عينة الحزم وتحليل الفروقات"
+                                        AppLanguage.FR -> "Afficher l'échantillon brut et les écarts"
+                                        AppLanguage.EN -> "Show raw buckets and discrepancy breakdown"
+                                    },
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -273,11 +369,25 @@ fun SettingsScreen(
                 }
             }
 
-            SettingsCategory(title = if (isArabic) "حول والشفافية" else "About & Transparency") {
+            SettingsCategory(
+                title = when (language) {
+                    AppLanguage.AR -> "حول والشفافية"
+                    AppLanguage.FR -> "À propos et transparence"
+                    AppLanguage.EN -> "About & Transparency"
+                }
+            ) {
                 SettingsItem(
                     icon = Icons.Default.Info,
-                    title = if (isArabic) "سياسة الخصوصية" else "Privacy Policy",
-                    subtitle = if (isArabic) "محلي 100% بدون خوادم تتبع" else "100% local, no telemetry or servers",
+                    title = when (language) {
+                        AppLanguage.AR -> "سياسة الخصوصية"
+                        AppLanguage.FR -> "Politique de confidentialité"
+                        AppLanguage.EN -> "Privacy Policy"
+                    },
+                    subtitle = when (language) {
+                        AppLanguage.AR -> "محلي 100% بدون خوادم تتبع"
+                        AppLanguage.FR -> "100% local, sans aucun serveur ni télémétrie"
+                        AppLanguage.EN -> "100% local, no telemetry or servers"
+                    },
                     onClick = onOpenPrivacyPolicy,
                     testTag = "privacy_settings_item"
                 )
@@ -291,13 +401,13 @@ private fun SettingsCategory(
     title: String,
     content: @Composable () -> Unit
 ) {
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Column {
         Text(
             text = title,
-            style = MaterialTheme.typography.labelMedium,
-            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(start = 8.dp, bottom = 8.dp)
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = DesignTokens.SpacingSmall, start = 4.dp)
         )
         content()
     }

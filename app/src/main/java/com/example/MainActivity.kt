@@ -78,7 +78,7 @@ class MainActivity : ComponentActivity() {
             val appUsageUiState by appUsageViewModel.uiState.collectAsState()
             val dataPlanUiState by dataPlanViewModel.uiState.collectAsState()
             val usageInsightsUiState by usageInsightsViewModel.uiState.collectAsState()
-            val layoutDirection = if (uiState.language == AppLanguage.AR) {
+            val layoutDirection = if (uiState.language.isRtl) {
                 LayoutDirection.Rtl
             } else {
                 LayoutDirection.Ltr

@@ -43,13 +43,19 @@ fun PermissionScreen(
     language: AppLanguage = AppLanguage.AR
 ) {
     val context = LocalContext.current
-    val isArabic = language == AppLanguage.AR
 
-    val title = if (isArabic) "مطلوب إذن الوصول لبيانات الاستخدام" else "Usage Access Permission Required"
-    val description = if (isArabic) {
-        "لقراءة إحصائيات استهلاك الشبكة الدقيقة المسجلة بواسطة نظام أندرويد (NetworkStatsManager)، يحتاج تطبيق NetPulse إلى إذن 'الوصول لبيانات الاستخدام'.\n\nجميع البيانات تُعالج محلياً 100% على جهازك دون إرسال أي شيء خارجياً."
-    } else {
-        "To read accurate network statistics recorded directly by Android system (NetworkStatsManager), NetPulse requires 'Usage Access' permission.\n\nAll data is processed 100% locally on your device without transmitting anything."
+    val title = when (language) {
+        AppLanguage.AR -> "مطلوب إذن الوصول لبيانات الاستخدام"
+        AppLanguage.FR -> "Autorisation d'accès aux données requise"
+        AppLanguage.EN -> "Usage Access Permission Required"
+    }
+    val description = when (language) {
+        AppLanguage.AR ->
+            "لقراءة إحصائيات استهلاك الشبكة الدقيقة المسجلة بواسطة نظام أندرويد (NetworkStatsManager)، يحتاج تطبيق NetPulse إلى إذن 'الوصول لبيانات الاستخدام'.\n\nجميع البيانات تُعالج محلياً 100% على جهازك دون إرسال أي شيء خارجياً."
+        AppLanguage.FR ->
+            "Pour lire les statistiques réseau précises enregistrées par Android (NetworkStatsManager), NetPulse nécessite l'autorisation « Accès aux données d'utilisation ».\n\nToutes les données sont traitées 100% localement sur votre appareil sans aucune transmission externe."
+        AppLanguage.EN ->
+            "To read accurate network statistics recorded directly by Android system (NetworkStatsManager), NetPulse requires 'Usage Access' permission.\n\nAll data is processed 100% locally on your device without transmitting anything."
     }
 
     Scaffold(
@@ -122,7 +128,13 @@ fun PermissionScreen(
                     .fillMaxWidth()
                     .testTag("grant_permission_button")
             ) {
-                Text(if (isArabic) "فتح إعدادات الوصول للاستخدام" else "Open Usage Access Settings")
+                Text(
+                    when (language) {
+                        AppLanguage.AR -> "فتح إعدادات الوصول للاستخدام"
+                        AppLanguage.FR -> "Ouvrir les paramètres d'accès"
+                        AppLanguage.EN -> "Open Usage Access Settings"
+                    }
+                )
             }
 
             Spacer(modifier = Modifier.height(DesignTokens.SpacingSmall))
@@ -133,7 +145,13 @@ fun PermissionScreen(
                     .fillMaxWidth()
                     .testTag("check_permission_button")
             ) {
-                Text(if (isArabic) "التحقق من الإذن مجدداً" else "Check Permission Again")
+                Text(
+                    when (language) {
+                        AppLanguage.AR -> "التحقق من الإذن مجدداً"
+                        AppLanguage.FR -> "Vérifier à nouveau l'autorisation"
+                        AppLanguage.EN -> "Check Permission Again"
+                    }
+                )
             }
 
             Spacer(modifier = Modifier.height(DesignTokens.SpacingSmall))
@@ -144,7 +162,13 @@ fun PermissionScreen(
                     .fillMaxWidth()
                     .testTag("privacy_policy_button")
             ) {
-                Text(if (isArabic) "سياسة الخصوصية" else "Privacy Policy")
+                Text(
+                    when (language) {
+                        AppLanguage.AR -> "سياسة الخصوصية"
+                        AppLanguage.FR -> "Politique de confidentialité"
+                        AppLanguage.EN -> "Privacy Policy"
+                    }
+                )
             }
         }
     }

@@ -171,6 +171,11 @@ class SettingsInteractionRegressionTest {
         composeTestRule.onNodeWithTag("option_item_EN").performClick()
 
         assertEquals(AppLanguage.EN, appSettingsPreferences.getLanguage())
+
+        composeTestRule.onNodeWithTag("language_settings_item").performClick()
+        composeTestRule.onNodeWithTag("option_item_FR").performClick()
+
+        assertEquals(AppLanguage.FR, appSettingsPreferences.getLanguage())
     }
 
     @Test
